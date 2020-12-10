@@ -1,8 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List
+from typing import List, Optional
 
-from config import DATE_FORMAT
+from config import DATE_FORMAT, DATE_TIME_FORMAT
 
 
 class Asset(object):
@@ -24,7 +24,7 @@ class Asset(object):
 class Transaction(object):
 
     def __init__(self, date: datetime, type: str, asset: Asset,
-                 volume: Decimal, taxable_price: Decimal, original_price: Decimal):
+                 volume: Decimal, taxable_price: Decimal, original_price: Optional[Decimal]):
         self.date = date
         self.type = type
         self.asset = asset
@@ -59,7 +59,7 @@ class Transaction(object):
         if type != 'SELL' and type != 'BUY':
             raise ValueError(f"Transaction type can only by of SELL or BUY, got: {type}")
 
-        return Transaction(datetime.strptime(row[0], DATE_FORMAT), type, asset,
+        return Transaction(datetime.strptime(row[0], DATE_TIME_FORMAT), type, asset,
                            decimal(row[4]), decimal(row[5]), decimal(row[6]))
 
     def __eq__(self, other):
@@ -70,7 +70,7 @@ class Transaction(object):
 
     def __repr__(self) -> str:
         return f"Transaction(" \
-               f"date={self.date.strftime(DATE_FORMAT)}," \
+               f"date={self.date.strftime(DATE_TIME_FORMAT)}," \
                f"type={self.type}," \
                f"asset={self.asset}," \
                f"volume={self.volume}," \

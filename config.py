@@ -3,6 +3,7 @@ from typing import Dict
 from src.model.tax import TaxRate, TaxPeriod
 
 DATE_FORMAT = '%Y-%m-%d'
+DATE_TIME_FORMAT = '"%Y-%m-%dT%H:%M:%S%z'
 
 TAX_RATES: Dict[str, TaxRate] = {
     '2018/2019': TaxRate(rate="0.2", allowance="11,700.00"),

@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 from src.business.processor import TransactionProcessor
@@ -50,111 +50,180 @@ class TestProcessor(unittest.TestCase):
         self.buy_apr_30 = Transaction(self.date_apr_30, 'BUY', asset, volume_buy_apr_30, price_buy_apr_30, aux_price)
         self.buy_jul_1 = Transaction(self.date_jul_1, 'BUY', asset, volume_buy_jul_1, price_buy_jul_1, aux_price)
 
-        self.sell_mar_1 = Transaction(self.date_mar_1, 'SELL', asset, volume_sell_mar_1, price_sell_mar_1, aux_price)
-        self.sell_mar_2 = Transaction(self.date_mar_2, 'SELL', asset, volume_sell_mar_2, price_sell_mar_2, aux_price)
-        self.sell_mar_15 = Transaction(self.date_mar_15, 'SELL', asset, volume_sell_mar_15, price_sell_mar_15,
+        sell_time_delta = timedelta(hours=1)
+        self.sell_mar_1 = Transaction(self.date_mar_1 + sell_time_delta, 'SELL', asset, volume_sell_mar_1,
+                                      price_sell_mar_1, aux_price)
+        self.sell_mar_2 = Transaction(self.date_mar_2 + sell_time_delta, 'SELL', asset, volume_sell_mar_2,
+                                      price_sell_mar_2, aux_price)
+        self.sell_mar_15 = Transaction(self.date_mar_15 + sell_time_delta, 'SELL', asset, volume_sell_mar_15,
+                                       price_sell_mar_15,
                                        aux_price)
-        self.sell_apr_1 = Transaction(self.date_apr_1, 'SELL', asset, volume_sell_apr_1, price_sell_apr_1, aux_price)
-        self.sell_apr_30 = Transaction(self.date_apr_30, 'SELL', asset, volume_sell_apr_30, price_sell_apr_30,
+        self.sell_apr_1 = Transaction(self.date_apr_1 + sell_time_delta, 'SELL', asset, volume_sell_apr_1,
+                                      price_sell_apr_1, aux_price)
+        self.sell_apr_30 = Transaction(self.date_apr_30 + sell_time_delta, 'SELL', asset, volume_sell_apr_30,
+                                       price_sell_apr_30,
                                        aux_price)
-        self.sell_jul_1 = Transaction(self.date_jul_1, 'SELL', asset, volume_sell_jul_1, price_sell_jul_1, aux_price)
+        self.sell_jul_1 = Transaction(self.date_jul_1 + sell_time_delta, 'SELL', asset, volume_sell_jul_1,
+                                      price_sell_jul_1, aux_price)
 
-    def test___process_same_day(self):
-        processor = TransactionProcessor()
-        process_same_day = processor._TransactionProcessor__process_same_day
+        self.processor = TransactionProcessor()
+        self.process_same_day = self.processor._TransactionProcessor__process_same_day
+        self.process_30_days = self.processor._TransactionProcessor__process_30_days
 
+    def test___process_same_day_when_empty(self):
+        self.assertEqual(self.process_same_day([]), [])
+
+    def test___process_same_day_when_no_overlap(self):
         buy1 = self.buy_mar_1
         buy2 = self.buy_mar_2
         sell1 = self.sell_mar_1
         sell2 = self.sell_mar_2
+
+        self.assertEqual(
+            [buy1, sell2],
+            self.process_same_day(
+                [buy1, sell2]
+            )
+        )
+
+        self.assertEqual(
+            [sell1, buy2],
+            self.process_same_day(
+                [sell1, buy2]
+            )
+        )
+
+    def test___process_same_day_when_no_merge(self):
+        buy1 = self.buy_mar_1
+        buy2 = self.buy_mar_2
+        sell1 = self.sell_mar_1
+        sell2 = self.sell_mar_2
+
+        self.assertEqual(
+            [buy1, buy2],
+            self.process_same_day(
+                [buy1, buy2]
+            )
+        )
+
+        self.assertEqual(
+            [sell1, sell2],
+            self.process_same_day(
+                [sell1, sell2]
+            )
+        )
+
+    def test___process_same_day_when_partial_overlap(self):
+        buy1 = self.buy_mar_1
+        buy2 = self.buy_mar_2
+        sell1 = self.sell_mar_1
+        sell2 = self.sell_mar_2
+
         buy1_sell1_diff = Transaction(buy1.date, 'BUY', buy1.asset, buy1.volume - sell1.volume, buy1.taxable_price,
                                       buy1.original_price)
-        buy2_sell2_diff = Transaction(buy2.date, 'SELL', buy2.asset, sell2.volume - buy2.volume, sell2.taxable_price,
+        buy2_sell2_diff = Transaction(sell2.date, 'SELL', buy2.asset, sell2.volume - buy2.volume, sell2.taxable_price,
                                       sell2.original_price)
 
-        # Empty
-        self.assertEqual(process_same_day([]), [])
+        self.assertEqual(
+            [buy1, buy2_sell2_diff],
+            self.process_same_day(
+                [buy1, sell2, buy2]
+            )
+        )
 
-        # No overlap
-        self.assertEqual(process_same_day(
-            [buy1, sell2]
-        ), [buy1, sell2])
+        self.assertEqual(
+            [buy1_sell1_diff, buy2],
+            self.process_same_day(
+                [buy1, sell1, buy2]
+            )
+        )
 
-        self.assertEqual(process_same_day(
-            [sell1, buy2]
-        ), [sell1, buy2])
+    def test___process_same_day_when_full_overlap(self):
+        buy1 = self.buy_mar_1
+        buy2 = self.buy_mar_2
+        sell1 = self.sell_mar_1
+        sell2 = self.sell_mar_2
 
-        # Overlap, partial
-        self.assertEqual(process_same_day(
-            [buy1, sell2, buy2]
-        ), [buy1, buy2_sell2_diff])
+        buy1_sell1_diff = Transaction(buy1.date, 'BUY', buy1.asset, buy1.volume - sell1.volume, buy1.taxable_price,
+                                      buy1.original_price)
+        buy2_sell2_diff = Transaction(sell2.date, 'SELL', buy2.asset, sell2.volume - buy2.volume, sell2.taxable_price,
+                                      sell2.original_price)
 
-        self.assertEqual(process_same_day(
-            [buy1, sell1, buy2]
-        ), [buy1_sell1_diff, buy2])
+        self.assertEqual(
+            [buy1_sell1_diff, buy2_sell2_diff],
+            self.process_same_day(
+                [buy1, sell2, buy2, sell1]
+            )
+        )
 
-        # Full overlap
-        self.assertEqual(process_same_day(
-            [buy1, sell2, buy2, sell1]
-        ), [buy1_sell1_diff, buy2_sell2_diff])
+        self.assertEqual(
+            [buy1_sell1_diff, buy2_sell2_diff],
+            self.process_same_day(
+                [sell2, sell1, buy1, buy2]
+            )
+        )
 
-        self.assertEqual(process_same_day(
-            [sell2, sell1, buy1, buy2]
-        ), [buy1_sell1_diff, buy2_sell2_diff])
+    def test___process_30_days_when_empty(self):
+        self.assertEqual(self.process_30_days([]), [])
 
-        # No merge
-        self.assertEqual(process_same_day(
-            [buy1, buy1]
-        ), [buy1, buy1])
+    def test___process_30_days_when_no_overlap(self):
+        self.assertEqual(
+            [self.buy_mar_1, self.sell_jul_1],
+            self.process_30_days(
+                [self.buy_mar_1, self.sell_jul_1]
+            )
+        )
 
-        self.assertEqual(process_same_day(
-            [sell1, sell2]
-        ), [sell1, sell2])
+        self.assertEqual(
+            [self.buy_mar_1, self.sell_jul_1],
+            self.process_30_days(
+                [self.sell_jul_1, self.buy_mar_1]
+            )
+        )
 
-    def test___process_30_days(self):
-        processor = TransactionProcessor()
-        process_30_days = processor._TransactionProcessor__process_30_days
+    def test___process_30_days_when_no_merge(self):
+        self.assertEqual(
+            [self.buy_mar_1, self.buy_mar_2],
+            self.process_30_days(
+                [self.buy_mar_1, self.buy_mar_2]
+            )
+        )
 
-        # Empty
-        self.assertEqual(process_30_days([]), [])
+        self.assertEqual(
+            [self.sell_mar_1, self.sell_mar_2],
+            self.process_30_days(
+                [self.sell_mar_1, self.sell_mar_2]
+            )
+        )
 
-        # No overlap
-        self.assertEqual(process_30_days(
-            [self.buy_mar_1, self.sell_jul_1]
-        ), [self.buy_mar_1, self.sell_jul_1])
-
-        self.assertEqual(process_30_days(
-            [self.sell_jul_1, self.buy_mar_1]
-        ), [self.buy_mar_1, self.sell_jul_1])
-
-        # Overlap, partial
+    def test___process_30_days_when_partial_overlap(self):
         buy_apr_1_sell_apr_30_diff = Transaction(self.buy_apr_1.date, 'BUY', self.buy_apr_1.asset,
                                                  self.buy_apr_1.volume - self.sell_apr_30.volume,
                                                  self.buy_apr_1.taxable_price, self.buy_apr_1.original_price)
-        self.assertEqual(process_30_days(
-            [self.buy_apr_1, self.sell_apr_30, self.sell_jul_1]
-        ), [buy_apr_1_sell_apr_30_diff, self.sell_jul_1])
+        self.assertEqual(
+            [buy_apr_1_sell_apr_30_diff, self.sell_jul_1],
+            self.process_30_days(
+                [self.buy_apr_1, self.sell_apr_30, self.sell_jul_1]
+            )
+        )
 
         sell_mar_15_buy_apr_1_diff = Transaction(self.sell_mar_15.date, 'SELL', self.sell_mar_15.asset,
                                                  self.sell_mar_15.volume - self.buy_apr_1.volume,
                                                  self.sell_mar_15.taxable_price, self.sell_mar_15.original_price)
-        self.assertEqual(process_30_days(
-            [self.buy_apr_1, self.sell_mar_15, self.buy_jul_1]
-        ), [sell_mar_15_buy_apr_1_diff, self.buy_jul_1])
+        self.assertEqual(
+            [sell_mar_15_buy_apr_1_diff, self.buy_jul_1],
+            self.process_30_days(
+                [self.buy_apr_1, self.sell_mar_15, self.buy_jul_1]
+            )
+        )
 
-        # Full overlap
+    def test___process_30_days_when_full_overlap(self):
         buy_mar_15_sell_apr_1_buy_apr_30 = Transaction(self.sell_apr_1.date, 'SELL', self.sell_mar_15.asset,
                                                        self.sell_apr_1.volume - self.buy_mar_15.volume - self.buy_apr_30.volume,
                                                        self.sell_apr_1.taxable_price, self.sell_mar_15.original_price)
-        self.assertEqual(process_30_days(
-            [self.buy_mar_15, self.sell_apr_1, self.buy_apr_30]
-        ), [buy_mar_15_sell_apr_1_buy_apr_30])
-
-        # No merge
-        self.assertEqual(process_30_days(
-            [self.buy_mar_1, self.buy_mar_2]
-        ), [self.buy_mar_1, self.buy_mar_2])
-
-        self.assertEqual(process_30_days(
-            [self.sell_mar_1, self.sell_mar_2]
-        ), [self.sell_mar_1, self.sell_mar_2])
+        self.assertEqual(
+            [buy_mar_15_sell_apr_1_buy_apr_30],
+            self.process_30_days(
+                [self.buy_mar_15, self.sell_apr_1, self.buy_apr_30]
+            )
+        )
