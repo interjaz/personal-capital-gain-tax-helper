@@ -38,6 +38,9 @@ Calculation algorithm is using following rules
 * "Bed and breakfast" or "same day" rules apply to all other transactions [5]
 * Assets (shares/coins) are calculated assuming they fall into Section 104 holding [6]
 * No stamp duty or any other costs are taken into calculation
+* **[Bug]** The "Bed and Breakfast" or "same day" policy applies to transaction, 
+currently it is calculated using FIFO, it should use Average Cost Base instead. [7] [8]
+
 
 #### Reference
 * [1] https://www.gov.uk/hmrc-internal-manuals/self-assessment-manual/sam121370
@@ -46,6 +49,8 @@ Calculation algorithm is using following rules
 * [4] https://forums.moneysavingexpert.com/discussion/5850109/bed-isa-vs-bed-breakfast/p2
 * [5] https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg51560
 * [6] https://www.gov.uk/hmrc-internal-manuals/capital-gains-manual/cg51555
+* [7] https://github.com/baxter100/uk-crypto-tax/issues/3
+* [8] https://www.reddit.com/r/BitcoinUK/comments/8abyvp/weve_made_a_program_for_calculating_capital_gains/
 
 ### Example
 
