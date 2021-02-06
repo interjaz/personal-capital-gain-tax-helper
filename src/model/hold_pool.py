@@ -83,7 +83,7 @@ class HoldPool(object):
 
     def estimate(self, new_cost) -> TaxableRecord:
         pool, estimated_record = self.dispose(
-            Transaction(datetime.now(), 'SELL', self.asset, self.volume, new_cost, None)
+            Transaction(datetime.utcnow().astimezone(), 'SELL', self.asset, self.volume, new_cost, None)
         )
 
         return estimated_record
