@@ -7,18 +7,19 @@ from config import DATE_FORMAT, DATE_TIME_FORMAT
 
 class Asset(object):
 
-    def __init__(self, symbol, type):
+    def __init__(self, group, symbol, type):
+        self.group = group
         self.symbol = symbol
         self.type = type
 
     def __eq__(self, other):
-        return self.symbol == other.symbol and self.type == other.type
+        return self.group == other.group and self.symbol == other.symbol and self.type == other.type
 
     def __hash__(self):
-        return hash((self.symbol, self.type))
+        return hash((self.group, self.symbol, self.type))
 
     def __repr__(self) -> str:
-        return f"Asset(symbol={self.symbol},type={self.type})"
+        return f"Asset(group={self.group},symbol={self.symbol},type={self.type})"
 
 
 class Transaction(object):
@@ -54,13 +55,13 @@ class Transaction(object):
             return Decimal(str_value.replace(",", ""))
 
         type = row[1]
-        asset = Asset(row[2], row[3])
+        asset = Asset(row[2], row[3], row[4])
 
         if type != 'SELL' and type != 'BUY':
             raise ValueError(f"Transaction type can only by of SELL or BUY, got: {type}")
 
         return Transaction(datetime.strptime(row[0], DATE_TIME_FORMAT), type, asset,
-                           decimal(row[4]), decimal(row[5]), decimal(row[6]))
+                           decimal(row[5]), decimal(row[6]), decimal(row[7]))
 
     def __eq__(self, other):
         return self.__hash__() == other.__hash__()

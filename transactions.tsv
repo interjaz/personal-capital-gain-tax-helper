@@ -1,9 +1,9 @@
-Date                  Transaction     Asset     Asset Type      Volume  Taxable Unit Price   Original Unit Price
-2019-09-16T10:15:00Z  BUY             AMZN           STOCK         152            1,454.77              1,807.84
-2020-09-15T09:33:00Z  BUY             AMZN           STOCK       5,555            2,450.26              3,156.13
-2020-12-02T20:17:00Z  SELL            AMZN           STOCK       1,000            2,398.00              3,203.53
+Date                  Transaction     Asset Group    Asset Code      Asset Type      Volume  Taxable Unit Price   Original Unit Price
+2019-09-16T10:15:00Z  BUY             Bank1                AMZN           STOCK         152            1,454.77              1,807.84
+2020-09-15T09:33:00Z  BUY             Bank2                AMZN           STOCK       5,555            2,450.26              3,156.13
+2020-12-02T20:17:00Z  SELL            Bank2                AMZN           STOCK       1,000            2,398.00              3,203.53
 
-2019-08-14T14:44:00Z  BUY             BTC           CRYPTO    0.000981            8,450.56              8,450.56
-2019-08-14T15:16:00Z  BUY             BTC           CRYPTO    0.024973            7,813.30              7,813.30
-2019-09-25T09:21:00Z  BUY             BTC           CRYPTO  100.013651            7,044.04              7,044.04
-2020-11-11T22:11:00Z  SELL            BTC           CRYPTO  100.000011           11,887.55             11,887.55
+2019-08-14T14:44:00Z  BUY             Exchange1             BTC           CRYPTO    0.000981            8,450.56              8,450.56
+2019-08-14T15:16:00Z  BUY             Exchange1             BTC           CRYPTO    0.024973            7,813.30              7,813.30
+2019-09-25T09:21:00Z  BUY             Exchange1             BTC           CRYPTO  100.013651            7,044.04              7,044.04
+2020-11-11T22:11:00Z  SELL            Exchange1             BTC           CRYPTO  100.000011           11,887.55             11,887.55

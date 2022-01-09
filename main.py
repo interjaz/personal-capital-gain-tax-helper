@@ -5,9 +5,13 @@ from src.business.processor import TransactionProcessor
 processor = TransactionProcessor()
 formatter = HtmlFormatter()
 
+print("Reading transactions file")
 transactions = parse('transactions.tsv')
-processed = processor.process(transactions)
-html = formatter.render(processed)
 
+print("Calculating tax")
+processed = processor.process(transactions)
+
+print("Rendering results")
+html = formatter.render(processed)
 with open('tax_return.html', 'w') as fp:
     fp.write(html)

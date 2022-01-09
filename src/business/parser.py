@@ -16,7 +16,7 @@ def parse(filename):
             if len(row) == 0:
                 continue
 
-            transaction = Transaction.parse([x for x in row if x != ''])
+            transaction = Transaction.parse([x for x in row if x])
             transactions.append(transaction)
 
     return transactions

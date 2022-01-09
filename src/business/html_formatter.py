@@ -105,7 +105,7 @@ class HtmlFormatter(object):
                         continue
 
                     buffer.append("<tr>")
-                    buffer.append(f"<td>{taxable_hold_pool.asset.symbol}</td>")
+                    buffer.append(f"<td>{taxable_hold_pool.asset.symbol} ({taxable_hold_pool.asset.group})</td>")
                     buffer.append(f"<td>{taxable_record.type}")
                     buffer.append(f"<td class=\"right\">{taxable_record.amount.quantize(DISPLAY_PRECISION, rounding=DISPLAY_ROUND)}")
                     buffer.append("</tr>")
@@ -174,7 +174,7 @@ class HtmlFormatter(object):
             if estimate_record.is_gain() else Decimal("0.0")
 
         buffer.append("<tr>")
-        buffer.append(f"<td>{hold_pool.asset.symbol}</td>")
+        buffer.append(f"<td>{hold_pool.asset.symbol} ({hold_pool.asset.group})</td>")
         buffer.append(f"<td class=\"right\">{market_asset_unit_price.quantize(DISPLAY_PRECISION, rounding=DISPLAY_ROUND)}</td>")
         buffer.append(f"<td class=\"right\">{hold_pool.volume}</td>")
         buffer.append(f"<td class=\"right\">{hold_pool.cost.quantize(DISPLAY_PRECISION, rounding=DISPLAY_ROUND)}</td>")
@@ -203,7 +203,7 @@ class HtmlFormatter(object):
 
         for hold_pool in taxable_hold_pool.hold_pools:
             buffer.append("<tr>")
-            buffer.append(f"<td>{hold_pool.asset.symbol}</td>")
+            buffer.append(f"<td>{hold_pool.asset.symbol} ({hold_pool.asset.group})</td>")
             buffer.append(f"<td>{hold_pool.date.strftime(DISPLAY_DATE_FORMAT)}</td>")
             buffer.append(f"<td class=\"right\">{hold_pool.volume}</td>")
             buffer.append(f"<td class=\"right\">{hold_pool.cost.quantize(DISPLAY_PRECISION, rounding=DISPLAY_ROUND)}</td>")
@@ -217,7 +217,7 @@ class HtmlFormatter(object):
         buffer = list()
 
         buffer.append("<div>")
-        buffer.append(f"<h2>Asset: {taxable_hold_pool.asset.symbol}</h2>")
+        buffer.append(f"<h2>Asset: {taxable_hold_pool.asset.symbol} ({taxable_hold_pool.asset.group})</h2>")
         buffer.append(f"<small>Type: {taxable_hold_pool.asset.type}</small><br />")
 
         buffer.append("<div>")

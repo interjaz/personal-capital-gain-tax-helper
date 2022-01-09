@@ -16,7 +16,7 @@ class TestProcessor(unittest.TestCase):
         self.date_apr_30 = datetime(2020, 4, 30)
         self.date_jul_1 = datetime(2020, 7, 1)
 
-        asset = Asset('a', 'b')
+        asset = Asset('group', 'a', 'b')
         volume_buy_mar_1 = Decimal(100)
         volume_buy_mar_2 = Decimal(20)
         volume_buy_mar_15 = Decimal(30)
