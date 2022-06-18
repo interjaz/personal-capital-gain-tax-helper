@@ -47,8 +47,8 @@ class TaxPeriod(object):
         self.day_end_at = day_end_at
 
     def tax_year(self, date):
-        if date.month > self.month_start_at or (date.month == self.month_start_at and date.day > self.day_start_at):
-            tax_year = f"{date.year + 1}/{date.year + 2}"
+        if date.month < self.month_start_at or (date.month == self.month_start_at and date.day < self.day_start_at):
+            tax_year = f"{date.year - 1}/{date.year}"
         else:
             tax_year = f"{date.year}/{date.year + 1}"
 
