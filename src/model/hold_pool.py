@@ -37,7 +37,7 @@ class HoldPool(object):
 
         new_pool = HoldPool(
             transaction.date,
-            self.asset,
+            transaction.asset,
             new_volume,
             new_cost
         )
@@ -63,7 +63,7 @@ class HoldPool(object):
 
         new_pool = HoldPool(
             transaction.date,
-            self.asset,
+            transaction.asset,
             new_volume,
             new_cost
         )

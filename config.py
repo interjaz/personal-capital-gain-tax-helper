@@ -11,6 +11,8 @@ TAX_RATES: Dict[str, TaxRate] = {
     '2020/2021': TaxRate(rate="0.2", allowance="12,300.00"),
     '2021/2022': TaxRate(rate="0.2", allowance="12,300.00"),
     '2022/2023': TaxRate(rate="0.2", allowance="12,300.00"),
+    '2023/2024': TaxRate(rate="0.2", allowance="6,000.00"),
+    '2024/2025': TaxRate(rate="0.24", allowance="3,000.00"),
 }
 
 TAX_PERIOD = TaxPeriod("UK", 4, 6, 4, 5)

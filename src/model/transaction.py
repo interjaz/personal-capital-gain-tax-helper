@@ -13,10 +13,10 @@ class Asset(object):
         self.type = type
 
     def __eq__(self, other):
-        return self.group == other.group and self.symbol == other.symbol and self.type == other.type
+        return self.symbol == other.symbol and self.type == other.type
 
     def __hash__(self):
-        return hash((self.group, self.symbol, self.type))
+        return hash((self.symbol, self.type))
 
     def __repr__(self) -> str:
         return f"Asset(group={self.group},symbol={self.symbol},type={self.type})"

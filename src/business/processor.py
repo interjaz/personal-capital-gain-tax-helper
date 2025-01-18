@@ -49,9 +49,13 @@ class TransactionProcessor(object):
         transactions = [x.copy() for x in transactions]
 
         disposals = [x for x in transactions if x.is_sell()]
+        processed_transactions = set()
         for disposal in disposals:
             start_at = (disposal.date - day_delta).date()
             end_at = (disposal.date + day_delta).date()
+
+            if disposal in processed_transactions:
+                continue
 
             to_merge = set()
             to_merge.add(disposal)
@@ -62,10 +66,17 @@ class TransactionProcessor(object):
                 if start_at <= transaction.date.date() <= end_at:
                     to_merge.add(transaction)
 
+            for merge in to_merge:
+                processed_transactions.add(merge)
+
             transactions = [x for x in transactions if x not in to_merge]
 
             merged = self.__merge(list(to_merge))
             transactions.extend(merged)
+
+            if len(to_merge) > 1:
+                transactions = sorted(transactions, key=lambda x: x.date)
+                return self.__process_x_days(transactions, days)
 
         transactions = sorted(transactions, key=lambda x: x.date)
         return transactions
